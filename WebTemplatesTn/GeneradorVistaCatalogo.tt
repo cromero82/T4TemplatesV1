@@ -33,7 +33,16 @@ for(int i= 0; i<entidad.Length;i++){
 	}
 }
 
-SqlConnection conn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString());
+SqlConnection MyConnection = new SqlConnection(System.Configuration.ConfigurationSettings.AppSettings["ControlcBDEntities"]);
+try
+{
+    MyConnection.Open();
+}
+catch (Exception ex)
+{
+	Write("errorr: " + ex.ToString());
+}
+//SqlConnection conn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString());
 //conn.ConnectionString = ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ConnectionString; //"Data Source=CROMERO\SQLEXPRESS;" +  "Initial Catalog=ControlcBD;" + "User id=adminservertaxi;" + "Password=adm1ns3rv3rtaxi*;";
 //conn.Open();
 
