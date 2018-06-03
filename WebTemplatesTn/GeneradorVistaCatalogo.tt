@@ -8,7 +8,7 @@
 
 <# 
 
-var modelo = "GenPersona";
+var modelo = "GenPersona ";
 var area = "General";
 var entidad = modelo.Substring(3, modelo.Length -3);
 var entidadPresentacion = entidad.Substring(0,1);
