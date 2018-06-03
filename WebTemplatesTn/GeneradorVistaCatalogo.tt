@@ -4,10 +4,8 @@
 <#@ assembly name="System.IO" #>
 <#@ assembly name="System.Data" #>
 <#@ assembly name="System.Configuration" #>
-<#@ assembly name="Microsoft.SqlServer.ConnectionInfo" #>
-<#@ assembly name="Microsoft.SqlServer.Smo" #>
-<#@ assembly name="Microsoft.SqlServer.Management.Sdk.Sfc" #>
 
+<#@ import namespace="System" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.IO" #>
@@ -15,8 +13,6 @@
 <#@ import namespace="System.Data.SqlClient" #>
 <#@ import namespace="System.Configuration" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="Microsoft.SqlServer.Management.Smo" #>
-<#@ import namespace="Microsoft.SqlServer.Management.Common" #>
 
 <#@ output extension=".cshtml" #>
 <# 
@@ -36,6 +32,11 @@ for(int i= 0; i<entidad.Length;i++){
 		}
 	}
 }
+
+SqlConnection conn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString());
+//conn.ConnectionString = ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ConnectionString; //"Data Source=CROMERO\SQLEXPRESS;" +  "Initial Catalog=ControlcBD;" + "User id=adminservertaxi;" + "Password=adm1ns3rv3rtaxi*;";
+//conn.Open();
+
 //var prueba = UtilidadesGenerador.EntidadFormatoPresentacion(entidad);
 var modulo = modelo.Substring(3);
  #> 
