@@ -27,12 +27,30 @@ namespace WebTemplatesTn.Controllers
                 //{
                 //    Console.Write("{0,-25}", column.ColumnName);
                 //}
+                SqlCommand sqlCmd;
+                string sql = null;
 
                 foreach (DataRow table in databases.Rows)
                 {
                     Console.WriteLine(string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]));
                     string tabla = string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]);
                     tabla = tabla.Replace(esquemaBase+".", "");
+                    sql = "Select * from " + tabla;
+
+                    sqlCmd = new SqlCommand(sql, conn);
+                    SqlDataReader sqlReader = sqlCmd.ExecuteReader();
+                    DataTable schemaTable = sqlReader.GetSchemaTable();
+
+                    foreach (DataRow row in schemaTable.Rows)
+                    {
+                        foreach (DataColumn column in schemaTable.Columns)
+                        {
+                            Console.WriteLine(string.Format("{0} = {1}", column.ColumnName, row[column]));
+                        }
+                    }
+                    sqlReader.Close();
+                    sqlCmd.Dispose();
+
                     Console.WriteLine(tabla);                    
                     //string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"])
                     //"dbo.Tdepartamentos"
@@ -48,6 +66,7 @@ namespace WebTemplatesTn.Controllers
                 //    //}
                 //    Console.WriteLine();
                 //}
+                conn.Close();
             }
             catch (Exception ex)
             {
