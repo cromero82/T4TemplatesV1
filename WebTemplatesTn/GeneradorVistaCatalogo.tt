@@ -15,6 +15,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 
 <#@ output extension=".cshtml" #>
+
 <# 
 
 var modelo = "GenPersona";
@@ -32,24 +33,87 @@ for(int i= 0; i<entidad.Length;i++){
 		}
 	}
 }
+// ---------------------
+var columnName = "";
+var tipoDato = "";
+var tamanioColumna = "";
+var presicionNumerica = "";
 
-var conexion = ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString();
+List<EstructuraTabla> info = new List<EstructuraTabla>();
 
-/*using (SqlConnection cnn = new SqlConnection(ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString()))
+SqlConnection conn = new SqlConnection();
+string esquemaBase = "dbo";
+conn.ConnectionString = "Data Source=CROMERO\\SQLEXPRESS;" + "Initial Catalog=ControlcBD;" + "User id=adminservertaxi;" + "Password=adm1ns3rv3rtaxi*;";
+try
 {
-cnn.Open();
-/*string query = @"select TOTAL_PUNTOS from RESULTADOS where ID_ENCUESTA= 1";
-SqlCommand cmd = new SqlCommand(query, cnn);
-string a = Convert.ToString(cmd.ExecuteScalar());
-cnn.Close();
-}*/
-//SqlConnection conn = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString());
-//conn.ConnectionString = ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ConnectionString; //"Data Source=CROMERO\SQLEXPRESS;" +  "Initial Catalog=ControlcBD;" + "User id=adminservertaxi;" + "Password=adm1ns3rv3rtaxi*;";
-//conn.Open();
+    conn.Open();
+    // get the database information
+    DataTable databases = conn.GetSchema(SqlClientMetaDataCollectionNames.Tables, new string[] { null, null, null, "BASE TABLE" }); //conn.GetSchema(SqlClientMetaDataCollectionNames.Databases);
+    SqlCommand sqlCmd;
+    string sql = null;
+
+    foreach (DataRow table in databases.Rows)
+    {                    
+        string tabla = string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]);
+        tabla = tabla.Replace(esquemaBase+".", "");
+        sql = "Select * from " + tabla;
+
+		if(tabla == "GenPersona")
+		{
+			sqlCmd = new SqlCommand(sql, conn);
+			SqlDataReader sqlReader = sqlCmd.ExecuteReader();
+			DataTable schemaTable = sqlReader.GetSchemaTable();
+
+			foreach (DataRow row in schemaTable.Rows)
+			{
+				foreach (DataColumn column in schemaTable.Columns)
+				{
+					if(column.ColumnName == "ColumnName"){
+						columnName = row[column].ToString();
+					 }
+					 if(column.ColumnName == "DataTypeName"){
+						tipoDato = row[column].ToString();
+						//"DataTypeName = int"
+					 }
+					 if(column.ColumnName == "ColumnSize"){
+						tamanioColumna = row[column].ToString();
+						//"ColumnSize = 4"
+					 } 
+ 
+					  if(column.ColumnName == "NumericPrecision"){
+						presicionNumerica = row[column].ToString();
+						//"NumericPrecision = 10"
+					 }
+				}
+
+				info.Add(new EstructuraTabla
+				{
+					NombreColumna = columnName,
+					PrecisionNumerica = presicionNumerica,
+					TamanioColumna = tamanioColumna,
+					TipoDato = tipoDato
+				});
+				columnName="";       presicionNumerica="";   tamanioColumna="";       tipoDato="";
+
+			}
+			sqlReader.Close();
+			sqlCmd.Dispose();
+		}               
+    }
+    Console.WriteLine();
+                
+    conn.Close();
+}
+catch (Exception ex)
+{
+    throw new Exception(ex.ToString());
+}
 
 //var prueba = UtilidadesGenerador.EntidadFormatoPresentacion(entidad);
 var modulo = modelo.Substring(3);
  #> 
+
+
 @model <#= modelo #>VM
 @{ MvcForm form;  }
 
@@ -72,7 +136,24 @@ var modulo = modelo.Substring(3);
         <div class="modal-body">
             @Html.HiddenFor(m => m.Estregistro, new { Value = 1 })
             @Html.Partial("_ValidationSummaryPersonalizado")
-                <div class="row">
+                
+				<#
+					foreach (var item in info)
+						{
+							Write(item.NombreColumna);
+							if(item.TipoDato == "int" && item.NombreColumna.Substring( item.NombreColumna.Length -2, 2)=="Id" ){								
+								//Write(item.NombreColumna.Substring( item.NombreColumna.Length -2, 2));
+								#>
+								IDDDDDDDD
+								<# 
+							}else{
+                            
+							}             
+						}
+				
+				#>
+				
+				<div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         @Html.LabelFor(m => m.TdocumentoId)
@@ -275,3 +356,13 @@ var modulo = modelo.Substring(3);
 	@(controllerName).initEdicion("@(ViewBag.Accion)");
     </script>
 </div>
+
+<#+
+ public class EstructuraTabla
+    {
+        public string NombreColumna { get; set; }
+        public string TipoDato { get; set; }
+        public string TamanioColumna { get; set; }
+        public string PrecisionNumerica { get; set; }
+    }
+#>

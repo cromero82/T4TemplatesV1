@@ -5,9 +5,9 @@ using System.Web;
 
 namespace WebTemplatesTn
 {
-    public static class UtilidadesGenerador
+    public  class UtilidadesGenerador
     {
-        public static string EntidadFormatoPresentacion(string entidad)
+        public  string EntidadFormatoPresentacion(string entidad)
         {
             var entidadPresentacion = entidad.Substring(0, 1);
             for (int i = 0; i < entidad.Length; i++)

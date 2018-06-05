@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebTemplatesTn;
 
 namespace WebTemplatesTn.Controllers
 {
@@ -13,6 +14,18 @@ namespace WebTemplatesTn.Controllers
     {
         public ActionResult Index()
         {
+            List<EstructuraTabla> info = new List<EstructuraTabla>();
+            info.Add(new EstructuraTabla
+            {
+                NombreColumna = "",
+                PrecisionNumerica = "",
+                TamanioColumna = "",
+                TipoDato = ""
+            });
+            
+
+            //UtilidadesGenerador util = new UtilidadesGenerador();
+            EstructuraTabla estructura = new EstructuraTabla();
             //http://tom-shelton.net/index.php/2009/02/21/exploring-sql-server-schema-information-with-adonet/                       
             SqlConnection conn = new SqlConnection();
             string esquemaBase = "dbo";
@@ -22,19 +35,17 @@ namespace WebTemplatesTn.Controllers
                 conn.Open();
                 // get the database information
                 DataTable databases = conn.GetSchema(SqlClientMetaDataCollectionNames.Tables, new string[] { null, null, null, "BASE TABLE" }); //conn.GetSchema(SqlClientMetaDataCollectionNames.Databases);
-                // print out the connections
-                //foreach (DataColumn column in databases.Columns)
-                //{
-                //    Console.Write("{0,-25}", column.ColumnName);
-                //}
                 SqlCommand sqlCmd;
                 string sql = null;
 
                 foreach (DataRow table in databases.Rows)
-                {
-                    Console.WriteLine(string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]));
+                {                    
                     string tabla = string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]);
                     tabla = tabla.Replace(esquemaBase+".", "");
+                    if(tabla == "GenPersona")
+                    {
+
+                    }
                     sql = "Select * from " + tabla;
 
                     sqlCmd = new SqlCommand(sql, conn);
@@ -50,37 +61,15 @@ namespace WebTemplatesTn.Controllers
                     }
                     sqlReader.Close();
                     sqlCmd.Dispose();
-
-                    Console.WriteLine(tabla);                    
-                    //string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"])
-                    //"dbo.Tdepartamentos"
                 }
                 Console.WriteLine();
-                // print out the rows...
-                //foreach (DataRow database in databases.Rows)
-                //{
-                //    //database.ItemArray[0]
-                //    //for (int i = 0; i < database.ItemArray.Length; i++)
-                //    //{
-                //    //    Console.Write("{0,-25}", database.ItemArray[i]);
-                //    //}
-                //    Console.WriteLine();
-                //}
+                
                 conn.Close();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.ToString());
             }
-
-            //using (SqlConnection cnn = new SqlConnection(ConfigurationManager.ConnectionStrings["ControlcBDEntities"].ToString()))
-            //{
-            //    cnn.Open();
-            //    //string query = @"select TOTAL_PUNTOS from RESULTADOS where ID_ENCUESTA= 1";
-            //    //SqlCommand cmd = new SqlCommand(query, cnn);
-            //    //string a = Convert.ToString(cmd.ExecuteScalar());
-            //    cnn.Close();
-            //}
             return View();
         }
 
