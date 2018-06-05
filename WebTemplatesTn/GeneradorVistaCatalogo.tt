@@ -20,6 +20,7 @@
 
 var modelo = "GenPersona";
 var area = "General";
+int tamanioGridBootstrap = 6;				// col-md-6
 var entidad = modelo.Substring(3, modelo.Length -3);
 var entidadPresentacion = entidad.Substring(0,1);
 for(int i= 0; i<entidad.Length;i++){
@@ -38,6 +39,8 @@ var columnName = "";
 var tipoDato = "";
 var tamanioColumna = "";
 var presicionNumerica = "";
+
+var areaDdl = ""; var controladorDdl = "";
 
 List<EstructuraTabla> info = new List<EstructuraTabla>();
 
@@ -138,17 +141,60 @@ var modulo = modelo.Substring(3);
             @Html.Partial("_ValidationSummaryPersonalizado")
                 
 				<#
+					
+					int acumGrid = 0;
 					foreach (var item in info)
 						{
-							Write(item.NombreColumna);
-							if(item.TipoDato == "int" && item.NombreColumna.Substring( item.NombreColumna.Length -2, 2)=="Id" ){								
-								//Write(item.NombreColumna.Substring( item.NombreColumna.Length -2, 2));
+						 if(acumGrid == 0){
 								#>
-								IDDDDDDDD
+								<div class="row">
 								<# 
-							}else{
+						 }
+						 #>
+									<div class="col-md-<#= tamanioGridBootstrap #>">
+										<div class="form-group">
+						 <# 
+							//Write(item.NombreColumna);
+							if(item.NombreColumna!="Id" && item.NombreColumna!="EstRegistro"){  
+								if(item.TipoDato == "int" && item.NombreColumna.Substring( item.NombreColumna.Length -2, 2)=="Id" ){								
+									//Write(item.NombreColumna.Substring( item.NombreColumna.Length -2, 2));
+									if(item.NombreColumna.Substring(1) == "T" 
+									&& (	item.NombreColumna.Substring(2) != "a" && item.NombreColumna.Substring(2) != "e" &&
+											item.NombreColumna.Substring(2) != "i" && item.NombreColumna.Substring(2) != "o" && 
+											item.NombreColumna.Substring(2) != "u" )
+											)
+                                    {
+										areaDdl = "ADMIN";
+										controladorDdl = "Tlistas";
+									}else{
+										areaDdl = area;
+										controladorDdl = "Tlistas";
+                                    }
+									#>
+									@Html.LabelFor(m => m.<#= item.NombreColumna #>)
+									@(Html.Kendo().DropDownListFor(m => m.<#= item.NombreColumna #>)                              
+										  .DataTextField("Nombre")
+										  .DataValueField("Id")
+										  .OptionLabel("Seleccione...")
+										  .DataSource(source =>
+										  {
+											  source.Custom().Type("aspnetmvc-ajax")
+												  .Transport(t =>
+												  {
+													  t.Read(r => r.Action("GetListTdocumentos", "Tlistas", new { Area = "ADMIN" }).Type(HttpVerbs.Post));
+												  })
+												  .ServerFiltering(false)
+												  .Schema(s => { s.Data("Data").Total("Total").Errors("Errors"); })
+												  .Events(e => e.Error("handleOnErrorModelState"));
+										  })
+										  .Filter("contains")
+										.HtmlAttributes(new { style = "width:100%;", @class = "itemComponente" })
+									)
+									<# 
+								}else{
                             
-							}             
+								}
+							}
 						}
 				
 				#>
