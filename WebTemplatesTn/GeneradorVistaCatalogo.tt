@@ -4,7 +4,6 @@
 <#@ assembly name="System.IO" #>
 <#@ assembly name="System.Data" #>
 <#@ assembly name="System.Configuration" #>
-
 <#@ import namespace="System" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -13,111 +12,27 @@
 <#@ import namespace="System.Data.SqlClient" #>
 <#@ import namespace="System.Configuration" #>
 <#@ import namespace="System.Collections.Generic" #>
-
 <#@ output extension=".cshtml" #>
-
 <# 
-
 var modelo = "GenPersona";
 var controlador = "Personas";
 var area = "General";
-int tamanioGridBootstrap = 6;				// col-md-6
+int tamanioGridBootstrap = 6;	// Ejemplo: col-md-6
+UtilsT4 util = new UtilsT4();
 var entidad = modelo.Substring(3, modelo.Length -3);
-var entidadPresentacion = entidad.Substring(0,1);
-for(int i= 0; i<entidad.Length;i++){
-	//if(entidad.Substring(i,1).i
-	if(i>0){
-		if (char.IsLower(entidad[i])){
-			entidadPresentacion = string.Concat(entidadPresentacion, entidad[i]);
-		}else{		
-			entidadPresentacion = string.Concat(entidadPresentacion, " ",  entidad[i]);				
-			//entidadPresentacion.Concat(""; entidad[i]);
-		}
-	}
-}
+var entidadPresentacion = util.GetEntidadPresentacion(entidad);
+
 // ---------------------
-var columnName = "";
-var tipoDato = "";
-var tamanioColumna = "";
-var presicionNumerica = "";
-
 var areaDdl = ""; var controladorDdl = ""; var accionDdl = "";
-
-List<EstructuraTabla> info = new List<EstructuraTabla>();
 
 SqlConnection conn = new SqlConnection();
 string esquemaBase = "dbo";
 conn.ConnectionString = "Data Source=CROMERO\\SQLEXPRESS;" + "Initial Catalog=ControlcBD;" + "User id=adminservertaxi;" + "Password=adm1ns3rv3rtaxi*;";
-try
-{
-    conn.Open();
-    // get the database information
-    DataTable databases = conn.GetSchema(SqlClientMetaDataCollectionNames.Tables, new string[] { null, null, null, "BASE TABLE" }); //conn.GetSchema(SqlClientMetaDataCollectionNames.Databases);
-    SqlCommand sqlCmd;
-    string sql = null;
 
-    foreach (DataRow table in databases.Rows)
-    {                    
-        string tabla = string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]);
-        tabla = tabla.Replace(esquemaBase+".", "");
-        sql = "Select * from " + tabla;
-
-		if(tabla == "GenPersona")
-		{
-			sqlCmd = new SqlCommand(sql, conn);
-			SqlDataReader sqlReader = sqlCmd.ExecuteReader();
-			DataTable schemaTable = sqlReader.GetSchemaTable();
-
-			foreach (DataRow row in schemaTable.Rows)
-			{
-				foreach (DataColumn column in schemaTable.Columns)
-				{
-					if(column.ColumnName == "ColumnName"){
-						columnName = row[column].ToString();
-					 }
-					 if(column.ColumnName == "DataTypeName"){
-						tipoDato = row[column].ToString();
-						//"DataTypeName = int"
-					 }
-					 if(column.ColumnName == "ColumnSize"){
-						tamanioColumna = row[column].ToString();
-						//"ColumnSize = 4"
-					 } 
- 
-					  if(column.ColumnName == "NumericPrecision"){
-						presicionNumerica = row[column].ToString();
-						//"NumericPrecision = 10"
-					 }
-				}
-
-				info.Add(new EstructuraTabla
-				{
-					NombreColumna = columnName,
-					PrecisionNumerica = presicionNumerica,
-					TamanioColumna = tamanioColumna,
-					TipoDato = tipoDato
-				});
-				columnName="";       presicionNumerica="";   tamanioColumna="";       tipoDato="";
-
-			}
-			sqlReader.Close();
-			sqlCmd.Dispose();
-		}               
-    }
-    Console.WriteLine();
-                
-    conn.Close();
-}
-catch (Exception ex)
-{
-    throw new Exception(ex.ToString());
-}
-
+List<EstructuraTabla> info = util.GetEstructuraTabla(conn, modelo, esquemaBase);
 //var prueba = UtilidadesGenerador.EntidadFormatoPresentacion(entidad);
 var modulo = modelo.Substring(3);
  #> 
-
-
 @model <#= modelo #>VM
 @{ MvcForm form;  }
 
@@ -162,24 +77,16 @@ var modulo = modelo.Substring(3);
 										var terminacionControlador = ""; // as, es, is, os, us
 									if (entidadContieneId) // Para generar dropdownlist
 										{	
-											if( ultimaLetraEntidadSinId == "a" || ultimaLetraEntidadSinId == "e" ||
-												ultimaLetraEntidadSinId == "i" || ultimaLetraEntidadSinId == "o" || 
-												ultimaLetraEntidadSinId == "u"
-												){
-													terminacionControlador = "s";
-											}else{
-													terminacionControlador = "es";
-                                            }													
-											
+											var entidadSingular =  util.GetNombreSingular(entidadSinId);																								
 											if(NombreCampo.Substring(0,1) == "T") 										
 											{
 												areaDdl = "ADMIN";												
 												controladorDdl = "Tlistas";
-												accionDdl = "GetListT" + entidadSinId + terminacionControlador;
+												accionDdl = "GetListT" + entidadSingular;
 											}else{												
 												areaDdl = area;
 												controladorDdl = NombreCampo;
-												accionDdl = "GetList" + entidadSinId + terminacionControlador;
+												accionDdl = "GetList" + entidadSingular;
 											}#>
 				<div class="col-md-<#= tamanioGridBootstrap #>">
 					<div class="form-group">
@@ -321,5 +228,115 @@ acumGrid = acumGrid + tamanioGridBootstrap;
         public string TipoDato { get; set; }
         public string TamanioColumna { get; set; }
         public string PrecisionNumerica { get; set; }
+    }
+
+public class UtilsT4
+    {
+		/// Obtiene Nombre en forma Singular
+		/// Ejemplo: Persona(s), Enser(es)
+		public string GetNombreSingular(string cadena){
+			var ultimaLetraEntidadSinId = cadena.Substring(cadena.Length-1, 1); 
+			var terminacionControlador = ""; // as, es, is, os, us									
+			if( ultimaLetraEntidadSinId == "a" || ultimaLetraEntidadSinId == "e" ||
+				ultimaLetraEntidadSinId == "i" || ultimaLetraEntidadSinId == "o" || 
+				ultimaLetraEntidadSinId == "u"
+				){
+					terminacionControlador = "s";
+			}else{
+					terminacionControlador = "es";
+			}
+			return cadena + terminacionControlador;
+        }	
+		
+		/// Obtiene nombre de presentacion
+		///	Ejemplo: GenPersonaPrincipal devuelve: Persona Principal
+		public string GetEntidadPresentacion(string entidad){
+			var entidadPresentacion = entidad.Substring(0,1);
+			for(int i= 0; i<entidad.Length;i++){		
+				if(i>0){
+					if (char.IsLower(entidad[i])){
+						entidadPresentacion = string.Concat(entidadPresentacion, entidad[i]);
+					}else{		
+						entidadPresentacion = string.Concat(entidadPresentacion, " ",  entidad[i]);							
+					}
+				}
+			}
+			return entidadPresentacion;
+		}
+
+		public List<EstructuraTabla> GetEstructuraTabla(SqlConnection conn, string modelo, string esquemaBase){
+			var columnName = "";
+			var tipoDato = "";
+			var tamanioColumna = "";
+			var presicionNumerica = "";
+			List<EstructuraTabla> info = new List<EstructuraTabla>();
+			try
+			{
+				conn.Open();
+				// get the database information
+				DataTable databases = conn.GetSchema(SqlClientMetaDataCollectionNames.Tables, new string[] { null, null, null, "BASE TABLE" }); 
+				SqlCommand sqlCmd;
+				string sql = null;
+
+				foreach (DataRow table in databases.Rows)
+				{                    
+					string tabla = string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]);
+					tabla = tabla.Replace(esquemaBase+".", "");
+					sql = "Select * from " + tabla;
+
+					if(tabla == modelo)
+					{
+						sqlCmd = new SqlCommand(sql, conn);
+						SqlDataReader sqlReader = sqlCmd.ExecuteReader();
+						DataTable schemaTable = sqlReader.GetSchemaTable();
+
+						foreach (DataRow row in schemaTable.Rows)
+						{
+							foreach (DataColumn column in schemaTable.Columns)
+							{
+								if(column.ColumnName == "ColumnName"){
+									columnName = row[column].ToString();
+								 }
+								 if(column.ColumnName == "DataTypeName"){
+									tipoDato = row[column].ToString();
+									//"DataTypeName = int"
+								 }
+								 if(column.ColumnName == "ColumnSize"){
+									tamanioColumna = row[column].ToString();
+									//"ColumnSize = 4"
+								 } 
+ 
+								  if(column.ColumnName == "NumericPrecision"){
+									presicionNumerica = row[column].ToString();
+									//"NumericPrecision = 10"
+								 }
+							}
+
+							info.Add(new EstructuraTabla
+							{
+								NombreColumna = columnName,
+								PrecisionNumerica = presicionNumerica,
+								TamanioColumna = tamanioColumna,
+								TipoDato = tipoDato
+							});
+							columnName="";       presicionNumerica="";   tamanioColumna="";       tipoDato="";
+
+						}
+						sqlReader.Close();
+						sqlCmd.Dispose();
+					}               
+				}
+				Console.WriteLine();
+                
+				conn.Close();
+				return info;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.ToString());
+				conn.Close();
+				return null;
+			}
+        }
     }
 #>

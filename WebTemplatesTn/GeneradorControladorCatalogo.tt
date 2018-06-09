@@ -1,0 +1,174 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.IO" #>
+<#@ assembly name="System.Data" #>
+<#@ assembly name="System.Configuration" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Data.SqlClient" #>
+<#@ import namespace="System.Configuration" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<# 
+
+var modelo = "GenPersona";
+var controlador = "Persona";
+var area = "General";
+int tamanioGridBootstrap = 6;				// col-md-6
+UtilsT4 util = new UtilsT4();
+var entidad = modelo.Substring(3, modelo.Length -3);
+var entidadPresentacion = entidad.Substring(0,1);
+
+entidadPresentacion = util.GetEntidadPresentacion(entidad);
+// ---------------------
+var columnName = "";
+var tipoDato = "";
+var tamanioColumna = "";
+var presicionNumerica = "";
+
+//var prueba = UtilidadesGenerador.EntidadFormatoPresentacion(entidad);
+var modulo = modelo.Substring(3);
+ #> 
+using ControlB.Utilidades;
+using Services.BL;
+using System;
+using System.Reflection;
+using System.Web.Mvc;
+using Kendo.Mvc.UI;
+using Model;
+
+namespace ControlB.Areas.<#=area#>.Controllers
+{
+    public class <#=controlador#>Controller   : UtilController
+    {
+        <#=controlador#>BL entityBL = new <#=controlador#>BL();
+        String EntityName = "<#=entidadPresentacion#>";
+        Object ModelEmpy = new <#=controlador#>VM();
+
+        /// <summary>
+        /// Obtiene una lista de <#= util.GetNombreSingular(controlador)#> para presentarla en un grid
+        /// </summary>
+        /// <param name="request"> Filtros kendoGrid en cliente </param>
+        /// <returns>lista de datos</returns>
+        [HttpPost]
+        [Authorize]
+        public ActionResult GetList([Kendo.Mvc.UI.DataSourceRequest]DataSourceRequest request)
+        {
+            var jresult = entityBL.GetList(request);
+            return EvaluarResultadoListaGenerico(jresult, request, "Error consultando Personas: ");
+        }
+
+        /// <summary>
+        /// Vista de edición (Crear y Editar) <#= controlador#>
+        /// </summary>
+        /// <param name="id"> id de registro</param>
+        /// <param name="accionCrud"> acción que se va a realizar en la vista: Crear o Editar</param>
+        /// <returns>Vista para accion crear o editar</returns>
+        [Authorize]
+        public ActionResult <#=controlador#>View(long? id, string accionCrud)
+        {
+            ViewBag.Accion = accionCrud;
+            if (accionCrud == "Insertar")
+            {
+                return PartialView("<#=controlador#>View", ModelEmpy);
+            }
+            else
+            {
+                var jresult = entityBL.Get((long)id);
+                return ManejadorRetornoVista(jresult, ModelEmpy);
+            } 
+        }        
+
+        /// <summary>
+        /// Inserta <#=controlador#>   
+        /// </summary>  
+        /// <param name="model">Instituciones model</param>
+        /// <returns></returns>
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public ActionResult Ins<#=controlador#>(<#=controlador#>VM model)
+        {
+            // Validaciones
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Accion = GetMethodCrudName(MethodInfo.GetCurrentMethod().Name);
+                return PartialView("<#=controlador#>View", model);
+            }
+
+            // Acceso a la capa de negocio y result
+            return Json(entityBL.Insert(model));
+        }
+
+        public ActionResult UpdGen<#=controlador#>(<#=controlador#>VM model)
+        {
+            // Validaciones
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Accion = GetMethodCrudName(MethodInfo.GetCurrentMethod().Name);
+                return PartialView("<#=controlador#>View", model);
+            }
+
+            // Acceso a la capa de negocio y result
+            return Json(entityBL.Update(model));
+        }
+
+        /// <summary>
+        /// Elimina <#=controlador#>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns> Resultado de la transacción </returns>
+        [HttpPost]
+        [Authorize]
+        public ActionResult Del<#=controlador#>(int id)
+        {
+            // Acceso a la capa de negocio y result
+            return Json(entityBL.Delete(id));
+        }
+    }
+}
+
+<#+
+ public class EstructuraTabla
+    {
+        public string NombreColumna { get; set; }
+        public string TipoDato { get; set; }
+        public string TamanioColumna { get; set; }
+        public string PrecisionNumerica { get; set; }		
+    }
+
+    public class UtilsT4
+    {
+		// Persona(s), Enser(es)
+		public string GetNombreSingular(string cadena){
+			var ultimaLetraEntidadSinId = cadena.Substring(cadena.Length-1, 1); 
+			var terminacionControlador = ""; // as, es, is, os, us									
+			if( ultimaLetraEntidadSinId == "a" || ultimaLetraEntidadSinId == "e" ||
+				ultimaLetraEntidadSinId == "i" || ultimaLetraEntidadSinId == "o" || 
+				ultimaLetraEntidadSinId == "u"
+				){
+					terminacionControlador = "s";
+			}else{
+					terminacionControlador = "es";
+			}
+			return cadena + terminacionControlador;
+        }	
+
+		public string GetEntidadPresentacion(string entidad){
+			var entidadPresentacion = entidad.Substring(0,1);
+			for(int i= 0; i<entidad.Length;i++){		
+				if(i>0){
+					if (char.IsLower(entidad[i])){
+						entidadPresentacion = string.Concat(entidadPresentacion, entidad[i]);
+					}else{		
+						entidadPresentacion = string.Concat(entidadPresentacion, " ",  entidad[i]);							
+					}
+				}
+			}
+			return entidadPresentacion;
+		}	
+    }
+#>
