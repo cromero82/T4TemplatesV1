@@ -151,10 +151,6 @@ var modulo = modelo.Substring(3);
 			<div class="row">
 <# 
 						 }
-#>
-				<div class="col-md-<#= tamanioGridBootstrap #>">
-					<div class="form-group"><# 
-							//Write(NombreCampo);
 							string NombreCampo = item.NombreColumna;							
 							if(NombreCampo !="Id" && NombreCampo !="EstRegistro" && NombreCampo != "Estregistro"){  
 														
@@ -174,12 +170,7 @@ var modulo = modelo.Substring(3);
 													terminacionControlador = "s";
 											}else{
 													terminacionControlador = "es";
-                                            }		
-
-											/*if(	NombreCampo.Substring(2,1)  != "a" && ultimaLetraEntidadSinId != "e" &&
-													ultimaLetraEntidadSinId != "i" && ultimaLetraEntidadSinId != "o" && 
-													ultimaLetraEntidadSinId != "u" )
-													)*/
+                                            }													
 											
 											if(NombreCampo.Substring(0,1) == "T") 										
 											{
@@ -191,6 +182,8 @@ var modulo = modelo.Substring(3);
 												controladorDdl = NombreCampo;
 												accionDdl = "GetList" + entidadSinId + terminacionControlador;
 											}#>
+				<div class="col-md-<#= tamanioGridBootstrap #>">
+					<div class="form-group">
 @Html.LabelFor(m => m.<#= NombreCampo #>)
 						@(Html.Kendo().DropDownListFor(model => model.<#= NombreCampo #>)                              
                               .DataTextField("Nombre")
@@ -216,6 +209,8 @@ var modulo = modelo.Substring(3);
 <#
 									}else{  // Corresponde a un campo numerico entero
 #>
+				<div class="col-md-<#= tamanioGridBootstrap #>">
+					<div class="form-group">
 						@Html.LabelFor(m => m.<#= NombreCampo #>)
 						@(Html.Kendo().NumericTextBoxFor(m => m.<#= NombreCampo #>)
 							.Name("<#= NombreCampo #>")
@@ -234,6 +229,8 @@ var modulo = modelo.Substring(3);
 									break;
 								default:	// varchars									
 #>
+				<div class="col-md-<#= tamanioGridBootstrap #>">
+					<div class="form-group">
 						@Html.LabelFor(m => m.<#= NombreCampo #>)
 						@(Html.TextBoxFor(m => m.<#= NombreCampo #>, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.<#= NombreCampo #>)
@@ -249,8 +246,7 @@ var modulo = modelo.Substring(3);
 #>
 			</div>  // fin row
 
-<# 
-							
+<# 	
                         }
 					}
 #>

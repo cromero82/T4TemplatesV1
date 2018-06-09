@@ -29,8 +29,8 @@
             @Html.Partial("_ValidationSummaryPersonalizado")                
 			<div class="row">
 				<div class="col-md-6">
-					<div class="form-group">				<div class="col-md-6">
-					<div class="form-group">@Html.LabelFor(m => m.TdocumentoId)
+					<div class="form-group">
+@Html.LabelFor(m => m.TdocumentoId)
 						@(Html.Kendo().DropDownListFor(model => model.TdocumentoId)                              
                               .DataTextField("Nombre")
                               .DataValueField("Id")
@@ -55,6 +55,7 @@
 			</div>  // fin row
 
 			<div class="row">
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.NumDoc)
@@ -62,6 +63,7 @@
 						@Html.ValidationMessageFor(m => m.NumDoc)
 					</div>  // Fin group
 				</div>					
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.PrimerNombre)
@@ -72,6 +74,7 @@
 			</div>  // fin row
 
 			<div class="row">
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.SegundoNombre)
@@ -79,6 +82,7 @@
 						@Html.ValidationMessageFor(m => m.SegundoNombre)
 					</div>  // Fin group
 				</div>					
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.PrimerApellido)
@@ -89,6 +93,7 @@
 			</div>  // fin row
 
 			<div class="row">
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.SegundoApellido)
@@ -96,6 +101,7 @@
 						@Html.ValidationMessageFor(m => m.SegundoApellido)
 					</div>  // Fin group
 				</div>					
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.FechaNacimiento)
@@ -106,6 +112,7 @@
 			</div>  // fin row
 
 			<div class="row">
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.Direccion)
@@ -113,6 +120,7 @@
 						@Html.ValidationMessageFor(m => m.Direccion)
 					</div>  // Fin group
 				</div>					
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.Telefono)
@@ -124,7 +132,8 @@
 
 			<div class="row">
 				<div class="col-md-6">
-					<div class="form-group">@Html.LabelFor(m => m.TmunicipioId)
+					<div class="form-group">
+@Html.LabelFor(m => m.TmunicipioId)
 						@(Html.Kendo().DropDownListFor(model => model.TmunicipioId)                              
                               .DataTextField("Nombre")
                               .DataValueField("Id")
@@ -146,6 +155,7 @@
 						@Html.ValidationMessageFor(m => m.TmunicipioId)
 					</div>
 				</div>	
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.CorreoElectronico)
@@ -156,6 +166,7 @@
 			</div>  // fin row
 
 			<div class="row">
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.Telefono2)
@@ -163,6 +174,7 @@
 						@Html.ValidationMessageFor(m => m.Telefono2)
 					</div>  // Fin group
 				</div>					
+
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.ModoRegistro)
@@ -174,8 +186,8 @@
 
 			<div class="row">
 				<div class="col-md-6">
-					<div class="form-group">				<div class="col-md-6">
-					<div class="form-group">						@Html.LabelFor(m => m.ArchivoID)
+					<div class="form-group">
+						@Html.LabelFor(m => m.ArchivoID)
 						@(Html.Kendo().NumericTextBoxFor(m => m.ArchivoID)
 							.Name("ArchivoID")
 							.Format("p0")
