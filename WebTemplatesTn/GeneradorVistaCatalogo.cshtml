@@ -30,7 +30,7 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
-@Html.LabelFor(m => m.TdocumentoId)
+						@Html.LabelFor(m => m.TdocumentoId)
 						@(Html.Kendo().DropDownListFor(model => model.TdocumentoId)                              
                               .DataTextField("Nombre")
                               .DataValueField("Id")
@@ -52,88 +52,101 @@
 						@Html.ValidationMessageFor(m => m.TdocumentoId)
 					</div>
 				</div>	
-			</div>  // fin row
-
-			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.NumDoc)
 						@(Html.TextBoxFor(m => m.NumDoc, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.NumDoc)
-					</div>  // Fin group
+					</div>  
 				</div>					
+			</div>  
+
+			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.PrimerNombre)
 						@(Html.TextBoxFor(m => m.PrimerNombre, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.PrimerNombre)
-					</div>  // Fin group
+					</div>  
 				</div>					
-			</div>  // fin row
-
-			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.SegundoNombre)
 						@(Html.TextBoxFor(m => m.SegundoNombre, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.SegundoNombre)
-					</div>  // Fin group
+					</div>  
 				</div>					
+			</div>  
+
+			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.PrimerApellido)
 						@(Html.TextBoxFor(m => m.PrimerApellido, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.PrimerApellido)
-					</div>  // Fin group
+					</div>  
 				</div>					
-			</div>  // fin row
-
-			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.SegundoApellido)
 						@(Html.TextBoxFor(m => m.SegundoApellido, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.SegundoApellido)
-					</div>  // Fin group
+					</div>  
 				</div>					
-
-				<div class="col-md-6">
-					<div class="form-group">
-						@Html.LabelFor(m => m.FechaNacimiento)
-						@(Html.TextBoxFor(m => m.FechaNacimiento, new { @class = "form-control", autocomplete = "off" }))
-						@Html.ValidationMessageFor(m => m.FechaNacimiento)
-					</div>  // Fin group
-				</div>					
-			</div>  // fin row
+			</div>  
 
 			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						@(Html.Kendo().DatePickerFor(m => m.FechaNacimiento)
+							.Max(String.Format("{0:d}", DateTime.Now))
+						   //.Value(FechaNacimiento)// String.Format("{0:d}", DateTime.Now))
+						   //.Culture("es-CO")
+						   //.DateInput()
+						   .Format("dd/MM/yyyy")
+						   .ParseFormats(new String[] { "dd/MM/yyyy" })
+								//.Value(m.FechaNacimiento ?? DateTime.Today)
+								//.Events(e =>
+								//{
+								//    e.Change("changeFechaNacimiento");
+								//})
+								.HtmlAttributes(new
+								{
+									@class = "",
+									style = "width: 100%",
+									@maxlength = "10",
+									@placeholder = "DD/MM/AAAA"
+								})
+							)
+					</div> 
+				</div>									
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.Direccion)
 						@(Html.TextBoxFor(m => m.Direccion, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.Direccion)
-					</div>  // Fin group
+					</div>  
 				</div>					
+			</div>  
+
+			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.Telefono)
 						@(Html.TextBoxFor(m => m.Telefono, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.Telefono)
-					</div>  // Fin group
+					</div>  
 				</div>					
-			</div>  // fin row
-
-			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
-@Html.LabelFor(m => m.TmunicipioId)
+						@Html.LabelFor(m => m.TmunicipioId)
 						@(Html.Kendo().DropDownListFor(model => model.TmunicipioId)                              
                               .DataTextField("Nombre")
                               .DataValueField("Id")
@@ -155,36 +168,36 @@
 						@Html.ValidationMessageFor(m => m.TmunicipioId)
 					</div>
 				</div>	
+			</div>  
+
+			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.CorreoElectronico)
 						@(Html.TextBoxFor(m => m.CorreoElectronico, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.CorreoElectronico)
-					</div>  // Fin group
+					</div>  
 				</div>					
-			</div>  // fin row
-
-			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.Telefono2)
 						@(Html.TextBoxFor(m => m.Telefono2, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.Telefono2)
-					</div>  // Fin group
+					</div>  
 				</div>					
+			</div>  
+
+			<div class="row">
 
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.ModoRegistro)
 						@(Html.TextBoxFor(m => m.ModoRegistro, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.ModoRegistro)
-					</div>  // Fin group
+					</div>  
 				</div>					
-			</div>  // fin row
-
-			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.ArchivoID)
@@ -200,8 +213,9 @@
 						@Html.ValidationMessageFor(m => m.ArchivoID)
 					</div>
 				</div>	
-			</div>  // fin row
+			</div> 
 
+		</div>  
 							
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -211,7 +225,7 @@
 
     <!-- Inicialización script de vista -->
     <script>
-	@(controllerName).initEdicion("@(ViewBag.Accion)");
+	Personas.initEdicion("@(ViewBag.Accion)");
     </script>
 </div>
 

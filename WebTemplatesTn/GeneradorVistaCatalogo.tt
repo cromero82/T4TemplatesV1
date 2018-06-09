@@ -141,19 +141,18 @@ var modulo = modelo.Substring(3);
 			@Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.Estregistro, new { Value = 1 })
             @Html.Partial("_ValidationSummaryPersonalizado")                
-<#
-					
-					int acumGrid = 0;
+<#					
+					int acumGrid = 0; int pos = -1;
 					foreach (var item in info)
 						{
-						 if(acumGrid == 0){
+						pos++;
+						 if(acumGrid == 0 && pos > 0){
 #>
 			<div class="row">
 <# 
 						 }
 							string NombreCampo = item.NombreColumna;							
-							if(NombreCampo !="Id" && NombreCampo !="EstRegistro" && NombreCampo != "Estregistro"){  
-														
+							if(NombreCampo !="Id" && NombreCampo !="EstRegistro" && NombreCampo != "Estregistro"){  														
 								switch (item.TipoDato)
 								{
 								case "int":
@@ -184,7 +183,7 @@ var modulo = modelo.Substring(3);
 											}#>
 				<div class="col-md-<#= tamanioGridBootstrap #>">
 					<div class="form-group">
-@Html.LabelFor(m => m.<#= NombreCampo #>)
+						@Html.LabelFor(m => m.<#= NombreCampo #>)
 						@(Html.Kendo().DropDownListFor(model => model.<#= NombreCampo #>)                              
                               .DataTextField("Nombre")
                               .DataValueField("Id")
@@ -207,6 +206,14 @@ var modulo = modelo.Substring(3);
 					</div>
 				</div>	
 <#
+acumGrid = acumGrid + tamanioGridBootstrap;
+						if( acumGrid >= 12){
+							acumGrid = 0;
+#>
+			</div>  
+
+<# 	
+                        }
 									}else{  // Corresponde a un campo numerico entero
 #>
 				<div class="col-md-<#= tamanioGridBootstrap #>">
@@ -225,7 +232,50 @@ var modulo = modelo.Substring(3);
 					</div>
 				</div>	
 <#
-										}										 
+acumGrid = acumGrid + tamanioGridBootstrap;
+						if( acumGrid >= 12){
+							acumGrid = 0;
+#>
+			</div> 
+
+<# 	
+                        }										}										 
+									break;
+								case "date":
+#>
+				<div class="col-md-<#= tamanioGridBootstrap #>">
+					<div class="form-group">
+						@(Html.Kendo().DatePickerFor(m => m.<#= NombreCampo #>)
+							.Max(String.Format("{0:d}", DateTime.Now))
+						   //.Value(<#= NombreCampo #>)// String.Format("{0:d}", DateTime.Now))
+						   //.Culture("es-CO")
+						   //.DateInput()
+						   .Format("dd/MM/yyyy")
+						   .ParseFormats(new String[] { "dd/MM/yyyy" })
+								//.Value(m.<#= NombreCampo #> ?? DateTime.Today)
+								//.Events(e =>
+								//{
+								//    e.Change("change<#= NombreCampo #>");
+								//})
+								.HtmlAttributes(new
+								{
+									@class = "",
+									style = "width: 100%",
+									@maxlength = "10",
+									@placeholder = "DD/MM/AAAA"
+								})
+							)
+					</div> 
+				</div>									
+<#
+acumGrid = acumGrid + tamanioGridBootstrap;
+						if( acumGrid >= 12){
+							acumGrid = 0;
+#>
+			</div>  
+
+<# 	
+                        }									
 									break;
 								default:	// varchars									
 #>
@@ -234,22 +284,23 @@ var modulo = modelo.Substring(3);
 						@Html.LabelFor(m => m.<#= NombreCampo #>)
 						@(Html.TextBoxFor(m => m.<#= NombreCampo #>, new { @class = "form-control", autocomplete = "off" }))
 						@Html.ValidationMessageFor(m => m.<#= NombreCampo #>)
-					</div>  // Fin group
+					</div>  
 				</div>					
 <#
-									break;
-							}																		
-						}
-						acumGrid = acumGrid + tamanioGridBootstrap;
+acumGrid = acumGrid + tamanioGridBootstrap;
 						if( acumGrid >= 12){
 							acumGrid = 0;
 #>
-			</div>  // fin row
+			</div>  
 
 <# 	
                         }
+									break;	
+							}															
+						}						
 					}
 #>
+		</div>  
 							
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -259,7 +310,7 @@ var modulo = modelo.Substring(3);
 
     <!-- Inicialización script de vista -->
     <script>
-	@(controllerName).initEdicion("@(ViewBag.Accion)");
+	<#= controlador #>.initEdicion("@(ViewBag.Accion)");
     </script>
 </div>
 
