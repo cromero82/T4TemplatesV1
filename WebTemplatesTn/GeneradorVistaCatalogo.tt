@@ -19,6 +19,7 @@
 <# 
 
 var modelo = "GenPersona";
+var controlador = "Personas";
 var area = "General";
 int tamanioGridBootstrap = 6;				// col-md-6
 var entidad = modelo.Substring(3, modelo.Length -3);
@@ -40,7 +41,7 @@ var tipoDato = "";
 var tamanioColumna = "";
 var presicionNumerica = "";
 
-var areaDdl = ""; var controladorDdl = "";
+var areaDdl = ""; var controladorDdl = ""; var accionDdl = "";
 
 List<EstructuraTabla> info = new List<EstructuraTabla>();
 
@@ -121,11 +122,11 @@ var modulo = modelo.Substring(3);
 @{ MvcForm form;  }
 
 <div id="<#=modelo#>">    
-    @if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("Ins<#= modelo #>", "<#= modelo #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
-    else {                               form = Ajax.BeginForm("Upd<#= modelo #>", "<#= modelo #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
+    @if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("Ins<#= modelo #>", "<#= controlador #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
+    else {                               form = Ajax.BeginForm("Upd<#= modelo #>", "<#= controlador #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
 
-	@*@if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("Ins<#= modelo #>", "<#= modelo #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess<#= modelo #>", OnFailure = "onFailure<#= modelo #>" }, new { enable_placeholder = "" }); }
-    else {                               form = Ajax.BeginForm("Upd<#= modelo #>", "<#= modelo #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess<#= modelo #>", OnFailure = "onFailure<#= modelo #>" }, new { enable_placeholder = "" }); }*@
+	@*@if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("Ins<#= modelo #>", "<#= controlador #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess<#= modelo #>", OnFailure = "onFailure<#= modelo #>" }, new { enable_placeholder = "" }); }
+    else {                               form = Ajax.BeginForm("Upd<#= modelo #>", "<#= controlador #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess<#= modelo #>", OnFailure = "onFailure<#= modelo #>" }, new { enable_placeholder = "" }); }*@
 
     @using (form)
     {        
@@ -154,35 +155,66 @@ var modulo = modelo.Substring(3);
 				<div class="col-md-<#= tamanioGridBootstrap #>">
 					<div class="form-group"><# 
 							//Write(NombreCampo);
-							string NombreCampo = item.NombreColumna;
-							if(NombreCampo !="Id" && NombreCampo !="EstRegistro"){  
+							string NombreCampo = item.NombreColumna;							
+							if(NombreCampo !="Id" && NombreCampo !="EstRegistro" && NombreCampo != "Estregistro"){  
 														
 								switch (item.TipoDato)
 								{
 								case "int":
-									var entidadContieneId = NombreCampo.Substring( NombreCampo.Length -2, 2) == "Id" ? true: false;							
+									var entidadContieneId = NombreCampo.Substring( NombreCampo.Length -2, 2) == "Id" ? true: false;	
+										var entidadSinId = NombreCampo.Substring(1, NombreCampo.Length - 3);											
+										var ultimaLetraEntidadSinId = entidadSinId.Substring(entidadSinId.Length-1, 1); 
+										var terminacionControlador = ""; // as, es, is, os, us
 									if (entidadContieneId) // Para generar dropdownlist
-										{												
+										{	
+											if( ultimaLetraEntidadSinId == "a" || ultimaLetraEntidadSinId == "e" ||
+												ultimaLetraEntidadSinId == "i" || ultimaLetraEntidadSinId == "o" || 
+												ultimaLetraEntidadSinId == "u"
+												){
+													terminacionControlador = "s";
+											}else{
+													terminacionControlador = "es";
+                                            }		
+
+											/*if(	NombreCampo.Substring(2,1)  != "a" && ultimaLetraEntidadSinId != "e" &&
+													ultimaLetraEntidadSinId != "i" && ultimaLetraEntidadSinId != "o" && 
+													ultimaLetraEntidadSinId != "u" )
+													)*/
 											
-											if(NombreCampo.Substring(1) == "T" 
-											&& (	NombreCampo.Substring(2) != "a" && NombreCampo.Substring(2) != "e" &&
-													NombreCampo.Substring(2) != "i" && NombreCampo.Substring(2) != "o" && 
-													NombreCampo.Substring(2) != "u" )
-													)
+											if(NombreCampo.Substring(0,1) == "T") 										
 											{
-												var entidadSinId = NombreCampo.Substring(1, NombreCampo.Length - 3);
-												var ultimaLetraEntidadSinId = entidadSinId.Substring(entidadSinId.Length-1, entidadSinId.Length); 
-#>
-												entidadSinId = <#= NombreCampo #>
-											ultimaLetraEntidadSinId= <#= ultimaLetraEntidadSinId #>
-<#
-												areaDdl = "ADMIN";
+												areaDdl = "ADMIN";												
 												controladorDdl = "Tlistas";
+												accionDdl = "GetListT" + entidadSinId + terminacionControlador;
 											}else{												
 												areaDdl = area;
-												controladorDdl = "Tlistas";
-											}
-										}else{  // Corresponde a un campo numerico entero
+												controladorDdl = NombreCampo;
+												accionDdl = "GetList" + entidadSinId + terminacionControlador;
+											}#>
+@Html.LabelFor(m => m.<#= NombreCampo #>)
+						@(Html.Kendo().DropDownListFor(model => model.<#= NombreCampo #>)                              
+                              .DataTextField("Nombre")
+                              .DataValueField("Id")
+                              .OptionLabel("Seleccione...")
+                              .DataSource(source =>
+                              {
+                                  source.Custom().Type("aspnetmvc-ajax")
+                                      .Transport(t =>
+                                      {
+                                          t.Read(r => r.Action("<#= accionDdl #>", "<#= controladorDdl #>", new { Area = "<#= areaDdl #>" }).Type(HttpVerbs.Post));
+                                      })
+                                      .ServerFiltering(false)
+                                      .Schema(s => { s.Data("Data").Total("Total").Errors("Errors"); })
+                                      .Events(e => e.Error("handleOnErrorModelState"));
+                              })
+                              .Filter("contains")
+                            .HtmlAttributes(new { style = "width:100%;", @class = "itemComponente" })
+                        )				
+						@Html.ValidationMessageFor(m => m.<#= NombreCampo #>)
+					</div>
+				</div>	
+<#
+									}else{  // Corresponde a un campo numerico entero
 #>
 						@Html.LabelFor(m => m.<#= NombreCampo #>)
 						@(Html.Kendo().NumericTextBoxFor(m => m.<#= NombreCampo #>)

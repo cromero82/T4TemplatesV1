@@ -8,11 +8,11 @@
 @{ MvcForm form;  }
 
 <div id="GenPersona">    
-    @if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("InsGenPersona", "GenPersona", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
-    else {                               form = Ajax.BeginForm("UpdGenPersona", "GenPersona", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
+    @if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("InsGenPersona", "Personas", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
+    else {                               form = Ajax.BeginForm("UpdGenPersona", "Personas", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
 
-	@*@if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("InsGenPersona", "GenPersona", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenPersona", OnFailure = "onFailureGenPersona" }, new { enable_placeholder = "" }); }
-    else {                               form = Ajax.BeginForm("UpdGenPersona", "GenPersona", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenPersona", OnFailure = "onFailureGenPersona" }, new { enable_placeholder = "" }); }*@
+	@*@if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("InsGenPersona", "Personas", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenPersona", OnFailure = "onFailureGenPersona" }, new { enable_placeholder = "" }); }
+    else {                               form = Ajax.BeginForm("UpdGenPersona", "Personas", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenPersona", OnFailure = "onFailureGenPersona" }, new { enable_placeholder = "" }); }*@
 
     @using (form)
     {        
@@ -30,7 +30,29 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div class="form-group">				<div class="col-md-6">
-					<div class="form-group">			</div>  // fin row
+					<div class="form-group">@Html.LabelFor(m => m.TdocumentoId)
+						@(Html.Kendo().DropDownListFor(model => model.TdocumentoId)                              
+                              .DataTextField("Nombre")
+                              .DataValueField("Id")
+                              .OptionLabel("Seleccione...")
+                              .DataSource(source =>
+                              {
+                                  source.Custom().Type("aspnetmvc-ajax")
+                                      .Transport(t =>
+                                      {
+                                          t.Read(r => r.Action("GetListTdocumentos", "Tlistas", new { Area = "ADMIN" }).Type(HttpVerbs.Post));
+                                      })
+                                      .ServerFiltering(false)
+                                      .Schema(s => { s.Data("Data").Total("Total").Errors("Errors"); })
+                                      .Events(e => e.Error("handleOnErrorModelState"));
+                              })
+                              .Filter("contains")
+                            .HtmlAttributes(new { style = "width:100%;", @class = "itemComponente" })
+                        )				
+						@Html.ValidationMessageFor(m => m.TdocumentoId)
+					</div>
+				</div>	
+			</div>  // fin row
 
 			<div class="row">
 				<div class="col-md-6">
@@ -102,7 +124,29 @@
 
 			<div class="row">
 				<div class="col-md-6">
-					<div class="form-group">				<div class="col-md-6">
+					<div class="form-group">@Html.LabelFor(m => m.TmunicipioId)
+						@(Html.Kendo().DropDownListFor(model => model.TmunicipioId)                              
+                              .DataTextField("Nombre")
+                              .DataValueField("Id")
+                              .OptionLabel("Seleccione...")
+                              .DataSource(source =>
+                              {
+                                  source.Custom().Type("aspnetmvc-ajax")
+                                      .Transport(t =>
+                                      {
+                                          t.Read(r => r.Action("GetListTmunicipios", "Tlistas", new { Area = "ADMIN" }).Type(HttpVerbs.Post));
+                                      })
+                                      .ServerFiltering(false)
+                                      .Schema(s => { s.Data("Data").Total("Total").Errors("Errors"); })
+                                      .Events(e => e.Error("handleOnErrorModelState"));
+                              })
+                              .Filter("contains")
+                            .HtmlAttributes(new { style = "width:100%;", @class = "itemComponente" })
+                        )				
+						@Html.ValidationMessageFor(m => m.TmunicipioId)
+					</div>
+				</div>	
+				<div class="col-md-6">
 					<div class="form-group">
 						@Html.LabelFor(m => m.CorreoElectronico)
 						@(Html.TextBoxFor(m => m.CorreoElectronico, new { @class = "form-control", autocomplete = "off" }))
@@ -130,20 +174,7 @@
 
 			<div class="row">
 				<div class="col-md-6">
-					<div class="form-group">						@Html.LabelFor(m => m.Estregistro)
-						@(Html.Kendo().NumericTextBoxFor(m => m.Estregistro)
-							.Name("Estregistro")
-							.Format("p0")
-							.Min(1)
-							.Max(9999)
-							.Step(1)
-							.Value(1)
-							.HtmlAttributes(new { style = "width: 100%", title = "Ingrese Estregistro" })
-						)
-						@Html.ValidationMessageFor(m => m.Estregistro)
-					</div>
-				</div>	
-				<div class="col-md-6">
+					<div class="form-group">				<div class="col-md-6">
 					<div class="form-group">						@Html.LabelFor(m => m.ArchivoID)
 						@(Html.Kendo().NumericTextBoxFor(m => m.ArchivoID)
 							.Name("ArchivoID")
