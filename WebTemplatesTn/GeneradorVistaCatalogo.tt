@@ -33,10 +33,10 @@ List<EstructuraTabla> info = util.GetEstructuraTabla(conn, modelo, esquemaBase);
 //var prueba = UtilidadesGenerador.EntidadFormatoPresentacion(entidad);
 var modulo = modelo.Substring(3);
  #> 
-@model <#= modelo #>VM
+@model <#= entidad #>VM
 @{ MvcForm form;  }
 
-<div id="<#=modelo#>">    
+<div id="<#=entidad#>VM">    
     @if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("Ins<#= modelo #>", "<#= controlador #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
     else {                               form = Ajax.BeginForm("Upd<#= modelo #>", "<#= controlador #>", new { Area = "<#= area #>" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
 

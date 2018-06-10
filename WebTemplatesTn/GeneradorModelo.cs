@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Model.BL
 {
-    public class GenPersonaVM
+    public class PersonaVM
     {
 		public int Id { get; set; }		
 		/// <summary>

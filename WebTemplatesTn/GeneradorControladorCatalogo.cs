@@ -52,7 +52,7 @@ namespace ControlB.Areas.General.Controllers
         /// <summary>
         /// Inserta Persona   
         /// </summary>  
-        /// <param name="model">Instituciones model</param>
+        /// <param name="model">Persona model</param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]

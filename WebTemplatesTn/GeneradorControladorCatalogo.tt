@@ -86,7 +86,7 @@ namespace ControlB.Areas.<#=area#>.Controllers
         /// <summary>
         /// Inserta <#=controlador#>   
         /// </summary>  
-        /// <param name="model">Instituciones model</param>
+        /// <param name="model"><#=entidadPresentacion#> model</param>
         /// <returns></returns>
         [ValidateAntiForgeryToken]
         [HttpPost]

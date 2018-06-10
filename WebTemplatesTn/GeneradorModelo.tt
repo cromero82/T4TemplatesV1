@@ -45,7 +45,7 @@ using System.Threading.Tasks;
 
 namespace Model.BL
 {
-    public class <#= modelo #>VM
+    public class <#= entidad #>VM
     {
 <#
 		int acumGrid = 0;

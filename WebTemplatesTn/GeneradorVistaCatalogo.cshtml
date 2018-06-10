@@ -1,8 +1,8 @@
 ﻿ 
-@model GenPersonaVM
+@model PersonaVM
 @{ MvcForm form;  }
 
-<div id="GenPersona">    
+<div id="PersonaVM">    
     @if (ViewBag.Accion == "Insertar") { form = Ajax.BeginForm("InsGenPersona", "Personas", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
     else {                               form = Ajax.BeginForm("UpdGenPersona", "Personas", new { Area = "General" }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccessGenerico", OnFailure = "onFailureGenerico" }, new { enable_placeholder = "" }); }
 
