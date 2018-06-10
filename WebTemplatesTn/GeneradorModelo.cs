@@ -80,5 +80,9 @@ namespace Model.BL
         public string ModoRegistro { get; set; }
 
 		[DisplayName("Estado registro")]
-		public int Estregistro { get; set; }        public int ArchivoID { get; set; }	}
+		public int Estregistro { get; set; }
+
+		[DisplayName("Documento anexo")]
+		public int ArchivoID { get; set; }
+	}
 }

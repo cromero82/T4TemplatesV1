@@ -58,7 +58,12 @@ namespace Model.BL
 			}else if( NombreCampo == "Estregistro"){#>
 
 		[DisplayName("Estado registro")]
-		public int Estregistro { get; set; }<# 
+		public int Estregistro { get; set; }<# 			
+			}else if( NombreCampo.Contains("Archivo") == true){#>
+
+
+		[DisplayName("Documento anexo")]
+		public int <#= NombreCampo #> { get; set; }<# 
 			}
 			else{
 				switch (item.TipoDato){			
@@ -69,13 +74,9 @@ namespace Model.BL
 						var terminacionControlador = ""; // as, es, is, os, us						
 					if (entidadContieneId) // Para generar dropdownlist
 						{	
-							var entidadSingular =  util.GetNombreSingular(entidadSinId);																								
-							if(NombreCampo.Substring(0,1) == "T") 										
-							{
-								nombreIdentity = "T" +entidadSinId;
-							}else{												
-								nombreIdentity = entidadSinId;
-							}#>
+							var entidadSingular =  util.GetNombreSingular(entidadSinId);
+							nombreIdentity = NombreCampo.Substring(0,1) + entidadSinId;
+							#>
 		
 		/// <summary>
         /// Definicion FK <#= NombreCampo #>
@@ -117,8 +118,8 @@ namespace Model.BL
 				}
 			
 			}
-	}
-#>
+	}#>
+
 	}
 }
 <#+
