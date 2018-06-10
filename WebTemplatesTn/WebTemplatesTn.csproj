@@ -243,6 +243,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GeneradorControladorCatalogo.tt</DependentUpon>
     </Compile>
+    <Compile Include="GeneradorBL.cs">
+      <DependentUpon>GeneradorBL.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="GeneradorModelo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -267,6 +272,10 @@
     <Content Include="GeneradorControladorCatalogo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>GeneradorControladorCatalogo.cs</LastGenOutput>
+    </Content>
+    <Content Include="GeneradorBL.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GeneradorBL.cs</LastGenOutput>
     </Content>
     <Content Include="GeneradorModelo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

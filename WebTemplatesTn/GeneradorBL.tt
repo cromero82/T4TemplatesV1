@@ -1,0 +1,225 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.IO" #>
+<#@ assembly name="System.Data" #>
+<#@ assembly name="System.Configuration" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Data.SqlClient" #>
+<#@ import namespace="System.Configuration" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<# 
+var modelo = "GenPersona";
+var controlador = "Personas";
+var area = "General";
+int tamanioGridBootstrap = 6;	// Ejemplo: col-md-6
+UtilsT4 util = new UtilsT4();
+var entidad = modelo.Substring(3, modelo.Length -3);
+var entidadPresentacion = util.GetEntidadPresentacion(entidad);
+
+// ---------------------
+var nombreIdentity = ""; 
+
+SqlConnection conn = new SqlConnection();
+string esquemaBase = "dbo";
+conn.ConnectionString = "Data Source=CROMERO\\SQLEXPRESS;" + "Initial Catalog=ControlcBD;" + "User id=adminservertaxi;" + "Password=adm1ns3rv3rtaxi*;";
+
+List<EstructuraTabla> info = util.GetEstructuraTabla(conn, modelo, esquemaBase);
+//var prueba = UtilidadesGenerador.EntidadFormatoPresentacion(entidad);
+var modulo = modelo.Substring(3);
+ #> 
+//using Model.BL.Tipos;
+using Kendo.Mvc.Extensions;
+using Model;
+using Model.General;
+using System;
+using System.Data.Entity;
+using System.Linq;
+
+namespace Services.BL
+{
+    public class <#= entidad #>BL : ClaseBL
+    {
+		// Contexto de base de datos (EF)
+        private ControlcBDEntities db = new ControlcBDEntities();
+        Jresult jresult = new Jresult();
+        private string entidad = "Persona";
+
+		public Jresult GetList(Kendo.Mvc.UI.DataSourceRequest filtrosComponenteKendo)
+        {
+            try
+            {
+                var queryable = db.<#= modelo #>.Where(f => f.Estregistro == 1).Select(r => new <#=entidad  #>VM
+                {                    
+					<#		
+		foreach (var item in info)
+			{							 
+			string NombreCampo = item.NombreColumna;
+			if( NombreCampo == "Id"){#>
+Id = r.Id,
+<#
+			}
+			else{				
+				var entidadContieneId = NombreCampo.Substring( NombreCampo.Length -2, 2) == "Id" ? true: false;					
+					var entidadSinId = NombreCampo.Substring(1, NombreCampo.Length - 3);											
+					var ultimaLetraEntidadSinId = entidadSinId.Substring(entidadSinId.Length-1, 1); 
+					var terminacionControlador = ""; // as, es, is, os, us						
+				if (entidadContieneId) // Para generar dropdownlist
+					{	
+						var entidadSingular =  util.GetNombreSingular(entidadSinId);
+						nombreIdentity = NombreCampo.Substring(0,1) + entidadSinId;#>
+					<#= NombreCampo #> = r.<#= NombreCampo #>,
+					<#= nombreIdentity #> = r.<#= nombreIdentity #> == null ? "" : r.<#= nombreIdentity #>.Nombre,
+<#  
+					}
+				else{#>
+					<#= NombreCampo #> = r.<#= NombreCampo #>
+<#  
+					}				
+				}
+			}#>                    
+                });
+
+                #region Aplicacion Filtro kendo
+                return AplicadorFiltrosKendo(jresult, filtrosComponenteKendo, queryable);
+                #endregion
+            }
+            #region Manejador Excepcion
+            catch (Exception ex) { return ManejadorExcepciones(ex, jresult, entidad); }
+            #endregion
+        }
+
+	}
+}
+<#+
+ public class EstructuraTabla
+    {
+        public string NombreColumna { get; set; }
+        public string TipoDato { get; set; }
+        public string TamanioColumna { get; set; }
+        public string PrecisionNumerica { get; set; }
+		public string PermiteNull {get; set;}
+    }
+
+public class UtilsT4
+    {
+		/// Obtiene Nombre en forma Singular
+		/// Ejemplo: Persona(s), Enser(es)
+		public string GetNombreSingular(string cadena){
+			var ultimaLetraEntidadSinId = cadena.Substring(cadena.Length-1, 1); 
+			var terminacionControlador = ""; // as, es, is, os, us									
+			if( ultimaLetraEntidadSinId == "a" || ultimaLetraEntidadSinId == "e" ||
+				ultimaLetraEntidadSinId == "i" || ultimaLetraEntidadSinId == "o" || 
+				ultimaLetraEntidadSinId == "u"
+				){
+					terminacionControlador = "s";
+			}else{
+					terminacionControlador = "es";
+			}
+			return cadena + terminacionControlador;
+        }	
+		
+		/// Obtiene nombre de presentacion
+		///	Ejemplo: GenPersonaPrincipal devuelve: Persona Principal
+		public string GetEntidadPresentacion(string entidad){
+			var entidadPresentacion = entidad.Substring(0,1);
+			for(int i= 0; i<entidad.Length;i++){		
+				if(i>0){
+					if (char.IsLower(entidad[i])){
+						entidadPresentacion = string.Concat(entidadPresentacion, entidad[i]);
+					}else{		
+						entidadPresentacion = string.Concat(entidadPresentacion, " ",  entidad[i]);							
+					}
+				}
+			}
+			return entidadPresentacion;
+		}
+
+		public List<EstructuraTabla> GetEstructuraTabla(SqlConnection conn, string modelo, string esquemaBase){
+			var columnName = "";
+			var tipoDato = "";
+			var tamanioColumna = "";
+			var presicionNumerica = "";
+			var permiteNull = "";
+			List<EstructuraTabla> info = new List<EstructuraTabla>();
+			try
+			{
+				conn.Open();
+				// get the database information
+				DataTable databases = conn.GetSchema(SqlClientMetaDataCollectionNames.Tables, new string[] { null, null, null, "BASE TABLE" }); 
+				SqlCommand sqlCmd;
+				string sql = null;
+
+				foreach (DataRow table in databases.Rows)
+				{                    
+					string tabla = string.Format("{0}.{1}", table["TABLE_SCHEMA"], table["TABLE_NAME"]);
+					tabla = tabla.Replace(esquemaBase+".", "");
+					sql = "Select * from " + tabla;
+
+					if(tabla == modelo)
+					{
+						sqlCmd = new SqlCommand(sql, conn);
+						SqlDataReader sqlReader = sqlCmd.ExecuteReader();
+						DataTable schemaTable = sqlReader.GetSchemaTable();
+
+						foreach (DataRow row in schemaTable.Rows)
+						{
+							foreach (DataColumn column in schemaTable.Columns)
+							{
+								if(column.ColumnName == "ColumnName"){
+									columnName = row[column].ToString();
+								 }
+								 if(column.ColumnName == "DataTypeName"){
+									tipoDato = row[column].ToString();
+									//"DataTypeName = int"
+								 }
+								 if(column.ColumnName == "ColumnSize"){
+									tamanioColumna = row[column].ToString();
+									//"ColumnSize = 4"
+								 } 
+ 
+								  if(column.ColumnName == "NumericPrecision"){
+									presicionNumerica = row[column].ToString();
+									//"NumericPrecision = 10"
+								 }
+
+								 if(column.ColumnName == "AllowDBNull"){
+									permiteNull = row[column].ToString();
+									//"NumericPrecision = 10"
+								 }
+							}
+
+							info.Add(new EstructuraTabla
+							{
+								NombreColumna = columnName,
+								PrecisionNumerica = presicionNumerica,
+								TamanioColumna = tamanioColumna,
+								TipoDato = tipoDato,
+								PermiteNull = permiteNull
+							});
+							columnName="";       presicionNumerica="";   tamanioColumna="";   tipoDato="";  permiteNull= "";
+
+						}
+						sqlReader.Close();
+						sqlCmd.Dispose();
+					}               
+				}
+				Console.WriteLine();
+                
+				conn.Close();
+				return info;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.ToString());
+				conn.Close();
+				return null;
+			}
+        }
+    }
+#>
